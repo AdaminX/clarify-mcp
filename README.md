@@ -1,5 +1,9 @@
 # clarity-mcp
 
+<p align="center">
+  <img src="assets/hero.png" alt="clarity-mcp" width="720" />
+</p>
+
 **Stop telling Claude what's on your screen. Let it look.**
 
 If you've used Claude Code on a frontend bug, you know the loop:
