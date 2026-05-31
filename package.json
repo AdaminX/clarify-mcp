@@ -1,5 +1,5 @@
 {
-  "name": "clarity-mcp",
+  "name": "@adaminx/clarity-mcp",
   "version": "0.1.0",
   "description": "Local MCP server that lets Claude inspect a webpage's console, network, DOM, and screen state while debugging — disposable headless Chromium, no live profile access, every call logged.",
   "keywords": [
