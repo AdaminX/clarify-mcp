@@ -1,4 +1,4 @@
-// Drive clarity-mcp from the host shell (since the running Claude session
+// Drive clarify-mcp from the host shell (since the running Claude session
 // can't load the MCP server itself — MCP servers register at session start).
 // Usage:  node scripts/inspect.mjs <url>
 import { spawn } from "node:child_process";

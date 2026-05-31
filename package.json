@@ -1,5 +1,5 @@
 {
-  "name": "@adaminx/clarity-mcp",
+  "name": "@adaminx/clarify-mcp",
   "version": "0.1.0",
   "description": "Local MCP server that lets Claude inspect a webpage's console, network, DOM, and screen state while debugging — disposable headless Chromium, no live profile access, every call logged.",
   "keywords": [
@@ -17,15 +17,15 @@
   "author": "AdaminX",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AdaminX/clarity-mcp.git"
+    "url": "https://github.com/AdaminX/clarify-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/AdaminX/clarity-mcp/issues"
+    "url": "https://github.com/AdaminX/clarify-mcp/issues"
   },
-  "homepage": "https://github.com/AdaminX/clarity-mcp#readme",
+  "homepage": "https://github.com/AdaminX/clarify-mcp#readme",
   "type": "module",
   "bin": {
-    "clarity-mcp": "./dist/server.js"
+    "clarify-mcp": "./dist/server.js"
   },
   "files": [
     "dist",

@@ -7,12 +7,12 @@
 // As-written this targets one specific dashboard's route list. Edit the
 // ROUTES array below (or pass routes as CLI args) to use it against your app.
 //
-// Spawns clarity-mcp as a child process (JSON-RPC over stdio).
+// Spawns clarify-mcp as a child process (JSON-RPC over stdio).
 //
 // Usage:
 //   node examples/walk-routes.mjs               # walk default route list
 //   node examples/walk-routes.mjs /work /chat   # walk only the given routes
-//   CLARITY_DASHBOARD_URL=https://... node examples/walk-routes.mjs
+//   CLARIFY_DASHBOARD_URL=https://... node examples/walk-routes.mjs
 
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
@@ -23,7 +23,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const OUTPUT_DIR = join(ROOT, "output");
 
-const ORIGIN = process.env.CLARITY_DASHBOARD_URL ?? "https://localhost:3000";
+const ORIGIN = process.env.CLARIFY_DASHBOARD_URL ?? "https://localhost:3000";
 
 const DEFAULT_ROUTES = [
   "/",

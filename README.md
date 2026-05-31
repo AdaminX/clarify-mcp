@@ -1,7 +1,7 @@
-# clarity-mcp
+# clarify-mcp
 
 <p align="center">
-  <img src="assets/hero.png" alt="clarity-mcp" width="720" />
+  <img src="assets/hero.png" alt="clarify-mcp" width="720" />
 </p>
 
 **Stop telling Claude what's on your screen. Let it look.**
@@ -15,7 +15,7 @@ If you've used Claude Code on a frontend bug, you know the loop:
 > **Claude:** What does the modal say when it renders?
 > **You:** It doesn't render. That's the bug.
 
-`clarity-mcp` ends that loop. It's a tiny local MCP server that gives Claude its own headless browser — so when you say *"the page is broken,"* Claude opens it, reads the console, checks the network tab, and tells **you** what's wrong. You stop being a copy-paste proxy. Bug fixes get faster. Your attention stays on what you were doing.
+`clarify-mcp` ends that loop. It's a tiny local MCP server that gives Claude its own headless browser — so when you say *"the page is broken,"* Claude opens it, reads the console, checks the network tab, and tells **you** what's wrong. You stop being a copy-paste proxy. Bug fixes get faster. Your attention stays on what you were doing.
 
 It runs locally, talks to Claude over stdio (no ports open), uses a disposable Chromium profile that never touches your real Chrome — and every tool call is logged to a file you can audit. About 1,000 lines of TypeScript on top of Playwright. That's the whole thing.
 
@@ -43,7 +43,7 @@ Three things to know up front:
 
 **1. The browser it spawns is not your browser.** Every session creates a fresh Chromium profile in your system temp directory and deletes it when the session ends. It cannot see your real Chrome cookies, your saved passwords, your extensions, your tabs, your history. It's a clean room every time.
 
-**2. The server doesn't open a port.** Communication with Claude Code happens over stdin/stdout — the same pipe Claude uses to spawn it. Nothing on your network can talk to clarity-mcp. There's nothing to expose.
+**2. The server doesn't open a port.** Communication with Claude Code happens over stdin/stdout — the same pipe Claude uses to spawn it. Nothing on your network can talk to clarify-mcp. There's nothing to expose.
 
 **3. The one dangerous tool is flagged as dangerous.** `browser_eval_js` runs arbitrary JavaScript in the page. That's genuinely risky on a sensitive site (it could read localStorage, fire requests, exfiltrate things). So: **every** call is appended verbatim to `output/evidence.jsonl` before the result returns. If logging fails, the call fails. You have a tamper-evident record of every line of JS Claude ran. Don't point this at your bank.
 
@@ -52,8 +52,8 @@ Three things to know up front:
 ## Install — 90 seconds
 
 ```bash
-git clone https://github.com/AdaminX/clarity-mcp.git
-cd clarity-mcp
+git clone https://github.com/AdaminX/clarify-mcp.git
+cd clarify-mcp
 npm install
 npm run build
 npx playwright install chromium
@@ -62,7 +62,7 @@ npx playwright install chromium
 Then tell Claude Code about it:
 
 ```bash
-claude mcp add -s user clarity-mcp node /absolute/path/to/clarity-mcp/dist/server.js
+claude mcp add -s user clarify-mcp node /absolute/path/to/clarify-mcp/dist/server.js
 ```
 
 `claude mcp list` should show `✓ Connected`. Open a **new** Claude Code session (existing ones won't pick it up until you restart them — MCP servers register at session boot).
@@ -79,7 +79,7 @@ Or, for a local dev server:
 
 > The dev server is on `http://localhost:3000` and the homepage looks broken. Open it, check the console and network tab, and tell me what you find.
 
-If it worked, you'll see Claude announce what it's doing (`🔍 CLARITY: Inspecting ...`) and come back with actual evidence instead of guesses.
+If it worked, you'll see Claude announce what it's doing (`🔍 CLARIFY: Inspecting ...`) and come back with actual evidence instead of guesses.
 
 ---
 
@@ -87,14 +87,14 @@ If it worked, you'll see Claude announce what it's doing (`🔍 CLARITY: Inspect
 
 Here's the part most people miss. **The tools are only half the value.** The other half is making Claude *use them* instead of reverting to the old habit of asking you to copy-paste the console.
 
-Drop the following into your project's `CLAUDE.md` (or your user-scope `~/.claude/CLAUDE.md`). These are the rules we use in-house. Without them, Claude will sometimes still default to *"can you check?"* — because that's what it learned to do before clarity-mcp existed.
+Drop the following into your project's `CLAUDE.md` (or your user-scope `~/.claude/CLAUDE.md`). These are the rules we use in-house. Without them, Claude will sometimes still default to *"can you check?"* — because that's what it learned to do before clarify-mcp existed.
 
 ````markdown
-### Live Browser State (clarity-mcp)
+### Live Browser State (clarify-mcp)
 
-For **any quick runtime question** about a local dev page, your default move is `clarity-mcp` — not grep, not "can you check?", not guessing. If the answer lives in DevTools and would take two seconds to look up there, look it up directly.
+For **any quick runtime question** about a local dev page, your default move is `clarify-mcp` — not grep, not "can you check?", not guessing. If the answer lives in DevTools and would take two seconds to look up there, look it up directly.
 
-**Use clarity-mcp first when:**
+**Use clarify-mcp first when:**
 - User reports "the page is blank / broken / not loading / stuck"
 - User reports a visual bug, layout issue, or rendering glitch
 - You need console errors, network failures, pageerror traces, or HTTP status codes
@@ -104,20 +104,20 @@ For **any quick runtime question** about a local dev page, your default move is 
 - You're verifying a fix on a UI/runtime change before claiming it works
 - You're about to write a guess about what the page is doing — get evidence first
 
-**Skip clarity-mcp only when:**
+**Skip clarify-mcp only when:**
 - The bug is purely in code logic — read the code instead
 - The dev server isn't running locally (note this and ask)
 - The page is behind auth you don't have credentials for (note the redirect to `/login`, ask the user how they'd like to proceed)
 
-**ANNOUNCE when using it.** Output `🔍 CLARITY: Inspecting <url>` before the call so the user sees it being used.
+**ANNOUNCE when using it.** Output `🔍 CLARIFY: Inspecting <url>` before the call so the user sees it being used.
 
-**Before asking the user to test, name the blocker.** No "can you test this?" / "can you check the page?" / "does the modal show up?" — ever — unless you have first either (a) used clarity-mcp and reported what you saw, or (b) explicitly stated which of the "Skip clarity-mcp" conditions applies *to this specific case*. "I'd rather you test it" is not a reason. "Faster if you check" is not a reason. The user testing is the fallback, not the default. If you skip, the skip reason goes in the message before the question.
+**Before asking the user to test, name the blocker.** No "can you test this?" / "can you check the page?" / "does the modal show up?" — ever — unless you have first either (a) used clarify-mcp and reported what you saw, or (b) explicitly stated which of the "Skip clarify-mcp" conditions applies *to this specific case*. "I'd rather you test it" is not a reason. "Faster if you check" is not a reason. The user testing is the fallback, not the default. If you skip, the skip reason goes in the message before the question.
 
-**`browser_eval_js` is the dangerous tool.** It runs arbitrary JS in the page context. Default to read-only inspections (`localStorage`, computed styles, `document.querySelector` reads). Don't use it to mutate state, fire requests, or clear storage without asking the user first. Every call is logged verbatim to `clarity-mcp/output/evidence.jsonl`.
+**`browser_eval_js` is the dangerous tool.** It runs arbitrary JS in the page context. Default to read-only inspections (`localStorage`, computed styles, `document.querySelector` reads). Don't use it to mutate state, fire requests, or clear storage without asking the user first. Every call is logged verbatim to `clarify-mcp/output/evidence.jsonl`.
 
-**Bug-fix protocol — visual/UI bugs.** Gather evidence with clarity-mcp *before* proposing a cause. Screenshot, console, network errors, and computed styles via `browser_eval_js`. Check `::before`/`::after` pseudo-elements and z-index stacking contexts — wrapper-blame without checking pseudo-elements is a common dead-end. State your hypothesis explicitly *before* changing code: "I think X is the cause because Y." If you can't write that sentence with evidence-backed Y, gather more.
+**Bug-fix protocol — visual/UI bugs.** Gather evidence with clarify-mcp *before* proposing a cause. Screenshot, console, network errors, and computed styles via `browser_eval_js`. Check `::before`/`::after` pseudo-elements and z-index stacking contexts — wrapper-blame without checking pseudo-elements is a common dead-end. State your hypothesis explicitly *before* changing code: "I think X is the cause because Y." If you can't write that sentence with evidence-backed Y, gather more.
 
-**Caveat — MCP servers register at session boot.** A session that started before clarity-mcp was registered won't see the tools; only fresh sessions do. If you don't see `browser_*` in your tool list, start a new Claude Code session.
+**Caveat — MCP servers register at session boot.** A session that started before clarify-mcp was registered won't see the tools; only fresh sessions do. If you don't see `browser_*` in your tool list, start a new Claude Code session.
 ````
 
 The load-bearing line is **"before asking the user to test, name the blocker."** Without that, Claude drifts back to "can you check?" by default. With it, Claude only kicks the question to you when there's a *specific* reason it can't look itself — and tells you which reason.
@@ -142,11 +142,11 @@ Tighten or relax the rest to fit your team.
 
 ## Optional: persistent login
 
-If the site requires auth, clarity-mcp can save a Playwright `storageState` so `browser_open` starts already logged in.
+If the site requires auth, clarify-mcp can save a Playwright `storageState` so `browser_open` starts already logged in.
 
-1. Copy `.env.local.example` → `.env.local` and fill in `CLARITY_DASHBOARD_URL`, `CLARITY_EMAIL`, `CLARITY_PASSWORD`.
+1. Copy `.env.local.example` → `.env.local` and fill in `CLARIFY_DASHBOARD_URL`, `CLARIFY_EMAIL`, `CLARIFY_PASSWORD`.
 2. Write a one-time bootstrap that logs in via the UI and calls `saveStorageState()` from `src/auth.ts`. See `examples/setup-auth-quox.mjs` for a working reference (specific to one product — treat it as a recipe to adapt).
-3. After that, `browser_open` loads the saved state automatically. If it expires and the page redirects to `/login`, clarity-mcp detects the redirect, fills the form via `loginViaForm()`, saves fresh state, and re-navigates. The response includes `{ reauthenticated: true }` so callers know it happened.
+3. After that, `browser_open` loads the saved state automatically. If it expires and the page redirects to `/login`, clarify-mcp detects the redirect, fills the form via `loginViaForm()`, saves fresh state, and re-navigates. The response includes `{ reauthenticated: true }` so callers know it happened.
 
 The selectors in `src/auth.ts` are intentionally generic (`input[type="email"]`, etc.) so they work against most login pages. Override them in a fork if your form is bespoke.
 
@@ -212,7 +212,7 @@ None of those are in scope right now. PRs welcome if you have a use that justifi
 
 Fair question. Other MCP servers in this space do more — they click, type, navigate flows, sometimes attach to your real browser. That's the right choice if you want Claude to *operate* a browser as an agent.
 
-`clarity-mcp` is the opposite bet: the smallest tool surface that solves the *"stop guessing about my dev page"* problem, with the safest possible defaults (disposable profile, no port, fail-closed audit log) and a set of rules that actually change Claude's behavior. If you mostly debug local dev pages and want Claude to look at them without it turning into a security review, this is the one. If you want Claude to fill checkout forms, look elsewhere.
+`clarify-mcp` is the opposite bet: the smallest tool surface that solves the *"stop guessing about my dev page"* problem, with the safest possible defaults (disposable profile, no port, fail-closed audit log) and a set of rules that actually change Claude's behavior. If you mostly debug local dev pages and want Claude to look at them without it turning into a security review, this is the one. If you want Claude to fill checkout forms, look elsewhere.
 
 ## License
 

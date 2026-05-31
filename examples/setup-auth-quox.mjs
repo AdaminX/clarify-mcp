@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // EXAMPLE — product-specific. Adapt before reusing.
 //
-// One-time auth bootstrap for clarity-mcp, written against the Quox dashboard
+// One-time auth bootstrap for clarify-mcp, written against the Quox dashboard
 // (https://github.com/quoxai). It's here as a reference for how to wire up
 // persistent login to YOUR app — the shape generalises even though the
 // signup/login flow doesn't.
 //
 // What it does:
-//   1. Reads CLARITY_EMAIL / CLARITY_PASSWORD / CLARITY_DASHBOARD_URL from
+//   1. Reads CLARIFY_EMAIL / CLARIFY_PASSWORD / CLARIFY_DASHBOARD_URL from
 //      .env.local (or env). If creds are missing, generates a stable demo
 //      user and writes them back to .env.local.
 //   2. Uses the `quox --insecure` CLI to signup → login → org-create →
@@ -17,7 +17,7 @@
 //   3. Drives Playwright through the dashboard's email/password form so
 //      cookies and localStorage land in the persistent state.
 //   4. Saves Playwright storageState to output/storage-state.json. From here
-//      on, every clarity-mcp browser_open will start authenticated.
+//      on, every clarify-mcp browser_open will start authenticated.
 //
 // Idempotent: if the user already exists, signup fails harmlessly and we
 // continue. If the org already exists, we just switch into it.
@@ -57,21 +57,21 @@ function writeEnvLocal(values) {
 const fileEnv = readEnvLocal();
 const env = (k, fallback) => process.env[k] ?? fileEnv[k] ?? fallback;
 
-let email = env("CLARITY_EMAIL");
-let password = env("CLARITY_PASSWORD");
-const dashboardUrl = env("CLARITY_DASHBOARD_URL", "https://localhost:3000");
+let email = env("CLARIFY_EMAIL");
+let password = env("CLARIFY_PASSWORD");
+const dashboardUrl = env("CLARIFY_DASHBOARD_URL", "https://localhost:3000");
 
 if (!email || !password) {
   // Stable, identifiable, single-user demo account.
-  email = `clarity-mcp-${process.pid}-${Date.now()}@quox.local`;
-  password = "ClarityMCP-2026!";
+  email = `clarify-mcp-${process.pid}-${Date.now()}@quox.local`;
+  password = "ClarifyMCP-2026!";
   console.log(`[setup-auth] no creds in env/.env.local — generated ${email}`);
 }
 
 writeEnvLocal({
-  CLARITY_EMAIL: email,
-  CLARITY_PASSWORD: password,
-  CLARITY_DASHBOARD_URL: dashboardUrl,
+  CLARIFY_EMAIL: email,
+  CLARIFY_PASSWORD: password,
+  CLARIFY_DASHBOARD_URL: dashboardUrl,
 });
 console.log(`[setup-auth] creds saved to ${ENV_LOCAL} (mode 0600)`);
 
@@ -89,7 +89,7 @@ function quox(args, { allowFail = false } = {}) {
 {
   console.log(`[setup-auth] quox signup ${email} (ok if already exists)`);
   const { code, out } = quox(
-    ["signup", "--email", email, "--password", password, "--name", "Clarity MCP"],
+    ["signup", "--email", email, "--password", password, "--name", "Clarify MCP"],
     { allowFail: true },
   );
   if (code !== 0) console.log(`[setup-auth]   ↳ signup non-zero (likely exists): ${out.trim().split("\n").slice(-3).join(" | ")}`);
@@ -99,11 +99,11 @@ console.log(`[setup-auth] quox login ${email}`);
 quox(["login", "--email", email, "--password", password]);
 
 // org create — also allowed to fail if it exists.
-const slug = (email.split("@")[0] || "clarity").replace(/[^a-z0-9-]/gi, "-").toLowerCase();
+const slug = (email.split("@")[0] || "clarify").replace(/[^a-z0-9-]/gi, "-").toLowerCase();
 {
   console.log(`[setup-auth] quox org create ${slug} (ok if already exists)`);
   const { code } = quox(
-    ["org", "create", "--name", "Clarity MCP", "--slug", slug],
+    ["org", "create", "--name", "Clarify MCP", "--slug", slug],
     { allowFail: true },
   );
   if (code !== 0) console.log(`[setup-auth]   ↳ org create non-zero (likely exists)`);

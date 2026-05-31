@@ -1,4 +1,4 @@
-// Form-login + persisted-session helpers for clarity-mcp.
+// Form-login + persisted-session helpers for clarify-mcp.
 //
 // Two surfaces:
 //   1. `saveStorageState` / `getStorageStatePath` — persist Playwright's
@@ -49,10 +49,10 @@ export function loadEnvLocal(): void {
 
 export function readCreds(): AuthCreds | null {
   loadEnvLocal();
-  const email = process.env.CLARITY_EMAIL;
-  const password = process.env.CLARITY_PASSWORD;
+  const email = process.env.CLARIFY_EMAIL;
+  const password = process.env.CLARIFY_PASSWORD;
   const dashboardUrl =
-    process.env.CLARITY_DASHBOARD_URL ?? "https://localhost:3000";
+    process.env.CLARIFY_DASHBOARD_URL ?? "https://localhost:3000";
   if (!email || !password) return null;
   return { dashboardUrl, email, password };
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 //
-// clarity-mcp — local MCP server.
+// clarify-mcp — local MCP server.
 //
 // Wiring overview:
 //   1. We construct a `Server` from @modelcontextprotocol/sdk and declare
@@ -179,7 +179,7 @@ const HANDLERS: Record<string, Handler> = {
 };
 
 const server = new Server(
-  { name: "clarity-mcp", version: "0.1.0" },
+  { name: "clarify-mcp", version: "0.1.0" },
   { capabilities: { tools: {} } },
 );
 
@@ -222,7 +222,7 @@ async function shutdown(signal: string): Promise<void> {
   } catch (err) {
     process.stderr.write(`shutdown: closeBrowser failed: ${String(err)}\n`);
   }
-  process.stderr.write(`clarity-mcp: received ${signal}, exiting.\n`);
+  process.stderr.write(`clarify-mcp: received ${signal}, exiting.\n`);
   process.exit(0);
 }
 
@@ -232,10 +232,10 @@ process.on("SIGTERM", () => void shutdown("SIGTERM"));
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  process.stderr.write("clarity-mcp: ready on stdio\n");
+  process.stderr.write("clarify-mcp: ready on stdio\n");
 }
 
 main().catch((err) => {
-  process.stderr.write(`clarity-mcp: fatal: ${String(err)}\n`);
+  process.stderr.write(`clarify-mcp: fatal: ${String(err)}\n`);
   process.exit(1);
 });
